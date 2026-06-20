@@ -1,0 +1,95 @@
+# ---------------------------------------------------------------------------
+# Secrets & local configuration — NEVER commit credentials.
+# Configuration is provided via environment variables only.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.local
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+credentials.json
+service-account*.json
+*credentials*
+*secret*
+.terraform.tfvars
+terraform.tfvars
+*.auto.tfvars
+
+# ---------------------------------------------------------------------------
+# Infrastructure as Code state — never commit state or provider plugins.
+# ---------------------------------------------------------------------------
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+.terraform.lock.hcl
+
+# ---------------------------------------------------------------------------
+# Dependencies & build artifacts
+# ---------------------------------------------------------------------------
+node_modules/
+dist/
+build/
+out/
+.next/
+.cache/
+*.tsbuildinfo
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------------------------------------------------------------------------
+# Logs, databases & large media (use Git LFS or a CDN instead)
+# ---------------------------------------------------------------------------
+*.log
+logs/
+*.sqlite
+*.sqlite3
+*.db
+*.parquet
+*.bin
+*.mp4
+*.mov
+*.zip
+
+# ---------------------------------------------------------------------------
+# Coverage & test output
+# ---------------------------------------------------------------------------
+coverage/
+.coverage
+htmlcov/
+*.lcov
+
+# ---------------------------------------------------------------------------
+# OS & editor cruft
+# ---------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*~
+
+# ---------------------------------------------------------------------------
+# Scratch / personal working notes — keep the public repo clean
+# ---------------------------------------------------------------------------
+scratch/
+tmp/
+*.bak
+*.tmp
+NOTES.local.md

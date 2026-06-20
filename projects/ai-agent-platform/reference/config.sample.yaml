@@ -1,0 +1,142 @@
+# =============================================================================
+# Agent Runtime — sample configuration (REFERENCE / TEMPLATE)
+# =============================================================================
+# Copy to ./config.yaml and adjust. This file is committed; your real config.yaml
+# is NOT (add it to .gitignore).
+#
+# GOLDEN RULE: this file contains NO secret VALUES. Every sensitive field holds the
+# NAME of an environment variable (written as ${VAR_NAME}) that the runtime resolves
+# at startup — first from the environment, then from the out-of-repo secret store.
+# Never paste a real key, token, host, account id, or path with personal data here.
+# See docs/adr/0002-tiered-secret-storage.md.
+# =============================================================================
+
+runtime:
+  log_level: ${AGENT_LOG_LEVEL}            # info | debug | warn  (default: info)
+  max_loop_iterations: ${AGENT_MAX_LOOP_ITERS}   # hard ceiling on the agent loop
+  fast_path: true                          # answer trivial requests without a model call
+  default_namespace: default               # memory/identity partition for single-tenant use
+
+# --- Cost governance ----------------------------------------------------------
+budget:
+  per_request_usd: ${AGENT_BUDGET_USD_PER_REQUEST}
+  per_day_usd: ${AGENT_BUDGET_USD_PER_DAY}
+  ledger_path: ${AGENT_COST_LEDGER_PATH}   # where the cost ledger is written
+
+# --- Secret store -------------------------------------------------------------
+# Optional. Omit to run environment-variable-only. When set, the resolver consults
+# this store for any ${VAR} not already in the environment.
+secrets:
+  store_path: ${AGENT_SECRET_STORE_PATH}   # OUTSIDE the repo; never committed
+  # store_backend: managed                 # optional: resolve against a managed
+  #                                         #   secrets backend instead of a file
+
+# --- Model mesh ---------------------------------------------------------------
+# A cheap router for everyday turns; an optional strong model for escalation.
+# Swapping providers = point these at a different adapter. The core never changes.
+# See docs/adr/0003-provider-agnostic-llm-mesh.md.
+models:
+  router:
+    adapter: model_router
+    endpoint: ${LLM_ROUTER_ENDPOINT}
+    model: ${LLM_ROUTER_MODEL}
+    api_key: ${LLM_ROUTER_API_KEY}         # leave the VAR unset for a keyless local server
+    context_tokens: 16384
+    timeout_s: 180
+
+  escalation:                              # optional — reached only on escalation
+    enabled: false
+    adapter: model_escalation
+    endpoint: ${LLM_ESCALATION_ENDPOINT}
+    model: ${LLM_ESCALATION_MODEL}
+    api_key: ${LLM_ESCALATION_API_KEY}
+    timeout_s: 240
+
+# --- Ingress channels ---------------------------------------------------------
+# Enable any subset. Each is a thin shell over the one planner.
+ingress:
+  enabled: ${INGRESS_ENABLED}              # comma list: voice,text,http,mcp
+
+  http:
+    bind_addr: ${HTTP_BIND_ADDR}           # bind to a PRIVATE interface
+    auth_token: ${HTTP_AUTH_TOKEN}         # bearer-token NAME required on requests
+    site_tier: low_trust                   # exposed endpoints get the lowest tier
+
+  voice:
+    wake_phrase: ${VOICE_WAKE_PHRASE}
+    stt_model_path: ${STT_MODEL_PATH}
+    tts_model_path: ${TTS_MODEL_PATH}
+    site_tier: default
+    conversation_hold_s: 30                # stay in-conversation after a reply
+
+  text:
+    site_tier: default
+
+  mcp:
+    site_tier: default
+
+# --- Trust tiers --------------------------------------------------------------
+# A caller may dispatch tools at its tier or below — never above. The dispatch
+# gate enforces this regardless of what the model proposes.
+# See docs/architecture.md section 3.
+trust:
+  tiers: [low_trust, default, delegated]
+  dry_run_destructive_by_default: true     # mutating tools simulate unless opted out
+  require_consent_for_destructive: true    # consent-flagged tools need explicit confirmation
+
+# --- Integrations (examples — add what you use) -------------------------------
+# Each integration is one adapter file behind a contract. Secrets are VAR NAMES.
+integrations:
+
+  - name: example_http_service
+    adapter: http_service
+    base_url: ${SVC_EXAMPLE_BASE_URL}
+    token: ${SVC_EXAMPLE_TOKEN}            # resolved from env/store by name
+    auth_model: service_account            # machine-owned resource
+
+  - name: example_user_account
+    adapter: http_service
+    auth_model: user_delegated             # acts on a person's own account
+    oauth:
+      client_id: ${OAUTH_EXAMPLE_CLIENT_ID}
+      client_secret: ${OAUTH_EXAMPLE_CLIENT_SECRET}
+      refresh_token: ${OAUTH_EXAMPLE_REFRESH_TOKEN}   # filled by the provisioning step
+      scopes: [<MINIMAL_SCOPE_1>, <MINIMAL_SCOPE_2>]  # request the least that works
+      runtime_scope_narrowing: true        # enforce a tighter boundary than granted
+    # see docs/adr/0004-service-account-vs-user-auth.md
+
+  - name: example_remote_host
+    adapter: remote_host
+    key_path: ${REMOTE_HOST_KEY_PATH}      # path to a private key (not committed)
+    network: private                       # reach remote hosts over a private network only
+
+# --- Memory -------------------------------------------------------------------
+memory:
+  adapter: memory
+  store_path: ${MEMORY_STORE_PATH}
+  namespaced: true                         # partition context per identity/tenant
+
+# --- World-state collectors ---------------------------------------------------
+# Tools flagged "requires fresh state" are blocked unless the relevant slice is
+# fresh. Collectors are idempotent and TTL-cached.
+state:
+  collectors:
+    - slice: services
+      freshness_ttl_s: 30
+    - slice: resources
+      freshness_ttl_s: 60
+
+# --- Reporting ----------------------------------------------------------------
+reporting:
+  scrub_sensitive_output: true             # strip secrets/PII from replies and logs
+  formatters:
+    voice: plain                           # spoken aloud: no markup, no emoji
+    text: markdown_light
+    http: json
+    mcp: structured
+
+# =============================================================================
+# Reminder: keep your real ./config.yaml and ./.env out of version control.
+# Only this *.sample file and .env.example (variable NAMES + placeholders) are
+# committed. A secret-scanning CI step is the backstop — see deploy/ci/.
+# =============================================================================
