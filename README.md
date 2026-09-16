@@ -69,6 +69,7 @@ the flagships if you only have a few minutes.
 | [Serverless AI Media-Generation Platform](projects/serverless-ai-media-platform/) | An **event-driven** serverless pipeline — request → moderation → queue → durable workflow → multi-provider AI → object storage — pay-per-use by design. | Case study |
 | [Algorithmic Trading Platform](projects/algorithmic-trading-platform/) | A multi-strategy trading engine with **pluggable market-data/broker adapters**, layered risk management and a kill switch, and idempotent execution. | Case study |
 | [MCP Integration Pattern](projects/mcp-integration-pattern/) | A clean, reusable pattern for exposing an existing system to AI agents as a typed **MCP server**. | Pattern |
+| [Gemlings — 3D exploration game](projects/gemlings/) | A **shipped Android game**: an endless three.js world streamed inside React Native, a generated-art pipeline that produced 55 creature models, a fixed-light-count performance rule, and a loop designed to be playable by everyone and to never sell chance. | Shipped |
 
 > A consolidated narrative, diagrams, and the cross-cutting Architecture Decision Records
 > live in [`docs/`](docs/); each project also carries its own project-specific ADRs in its
