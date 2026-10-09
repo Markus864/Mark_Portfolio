@@ -64,6 +64,7 @@ the flagships if you only have a few minutes.
 
 | Project | One-line value | Status |
 |---|---|---|
+| [**Klamdo** — live AI content SaaS](projects/klamdo/) | **In production with paying subscribers.** Identity-consistent AI images/video and agentic content packages on a fully serverless Cloudflare stack — Stripe billing with credit reserve/refund, a self-healing job pipeline, hardened security, and a public MCP server for AI agents. [klamdo.app](https://klamdo.app) | Live product |
 | [AI Agent Platform](projects/ai-agent-platform/) | A reusable framework for tool-using agents — a planner over a typed tool registry with **approval-gated autonomy**, a provider-agnostic model mesh, and a step-by-step setup guide to deploy your own. | Flagship |
 | [Industrial IoT / IT–OT Convergence Platform](projects/industrial-iot-platform/) | **IT/OT convergence** — plant-floor telemetry bridged one-way to cloud analytics with retrieval-grounded troubleshooting, fully provisioned with **Terraform**. | Flagship |
 | [Serverless AI Media-Generation Platform](projects/serverless-ai-media-platform/) | An **event-driven** serverless pipeline — request → moderation → queue → durable workflow → multi-provider AI → object storage — pay-per-use by design. | Case study |

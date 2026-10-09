@@ -7,9 +7,14 @@
 
 **Author:** Mark Splawn — Solutions Architect / Platform Engineer
 **Type:** Architecture case study (design + working reference implementation)
-**Status:** Designed, built, and deployed; the end-to-end pipeline has run live in testing.
-This is not a finished paying-public product — one AI component was not completed for a full
-public launch — so the write-up focuses on the architecture and the properties it is
+> **Update (October 2026):** this architecture shipped as **[Klamdo](../klamdo/)** — now a live
+> product at [klamdo.app](https://klamdo.app) with paying subscribers. The Klamdo case study
+> covers the production system, billing, reliability stack and lessons learned; this page
+> remains as the original design write-up.
+
+**Status (original write-up):** Designed, built, and deployed; the end-to-end pipeline had run
+live in testing. At the time of writing it was not yet a paying-public product, so the write-up
+focuses on the architecture and the properties it is
 designed to provide.
 **Domain framing:** Generic B2B/B2C SaaS — applies to any product that turns a user request
 into one or more expensive, asynchronous AI calls and returns a stored artifact.
